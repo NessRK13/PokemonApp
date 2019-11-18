@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -11,6 +12,8 @@ namespace PokemonAppAPI
         static PokemonClient()
         {
             _client = new HttpClient();
+
+            _client.BaseAddress = new Uri("https://pokeapi.co/api/v2/pokemon/");
         }
 
         /// <summary>
@@ -19,7 +22,18 @@ namespace PokemonAppAPI
         /// <returns></returns>
         public async Task<PokemonResponse> GetPokemon(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+                throw new ArgumentOutOfRangeException("id must be higher then 0");
+
+            HttpResponseMessage response = await _client.GetAsync($"{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                PokemonResponse result = JsonConvert.DeserializeObject<PokemonResponse>(data);
+                return result;
+            }
+            else
+                return null;
         }
 
         /// <summary>
