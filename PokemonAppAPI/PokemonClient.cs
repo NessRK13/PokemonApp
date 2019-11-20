@@ -42,7 +42,15 @@ namespace PokemonAppAPI
         /// <returns></returns>
         public async Task<PokemonResponse> GetPokemon(string name)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await _client.GetAsync($"{name}");
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                PokemonResponse result = JsonConvert.DeserializeObject<PokemonResponse>(data);
+                return result;
+            }
+            else
+                return null;
         }
     }
 }
